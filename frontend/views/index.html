@@ -62,7 +62,7 @@
     <script>
       // Function to load all users from the API
       function loadUsers() {
-        fetch("http://localhost:3000/users")
+        fetch("https://node-pg-c41x.onrender.com/users")
           .then((response) => response.json())
           .then((data) => {
             const usersTableBody = document.querySelector("#usersTable tbody");
@@ -88,7 +88,7 @@
           const name = document.getElementById("name").value;
           const email = document.getElementById("email").value;
 
-          fetch("http://localhost:3000/addUsers", {
+          fetch("https://node-pg-c41x.onrender.com/addUsers", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
