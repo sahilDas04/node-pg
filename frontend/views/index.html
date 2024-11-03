@@ -1,0 +1,111 @@
+<!-- views/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node + PostgresSQL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="font-sans bg-gray-100 p-6">
+    <h1 class="text-4xl font-bold mb-6">User Management</h1>
+
+    <!-- Form to Add a New User -->
+    <h2 class="text-2xl font-semibold mb-4">Add New User</h2>
+    <form id="userForm" class="mb-6">
+      <div class="flex items-center mb-4">
+        <label for="name" class="mr-2">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          required
+          class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-green-500"
+        />
+      </div>
+      <div class="flex items-center mb-4">
+        <label for="email" class="mr-2">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-green-500"
+        />
+        <input
+          type="submit"
+          value="Add User"
+          class="ml-4 p-2 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600 transition"
+        />
+      </div>
+    </form>
+
+    <!-- Table to Display Users -->
+    <h2 class="text-2xl font-semibold mb-4">Users List</h2>
+    <table
+      id="usersTable"
+      class="min-w-full bg-white border border-gray-300 mb-6"
+    >
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="py-2 px-4 border-b">ID</th>
+          <th class="py-2 px-4 border-b">Name</th>
+          <th class="py-2 px-4 border-b">Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Users will be inserted here dynamically -->
+      </tbody>
+    </table>
+
+    <!-- Script to Fetch Users and Add New User -->
+    <script>
+      // Function to load all users from the API
+      function loadUsers() {
+        fetch("http://localhost:3000/users")
+          .then((response) => response.json())
+          .then((data) => {
+            const usersTableBody = document.querySelector("#usersTable tbody");
+            usersTableBody.innerHTML = ""; // Clear the table
+            data.forEach((user) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${user.id}</td>
+                            <td class="py-2 px-4 border-b">${user.name}</td>
+                            <td class="py-2 px-4 border-b">${user.email}</td>
+                        `;
+              usersTableBody.appendChild(row);
+            });
+          })
+          .catch((error) => console.error("Error loading users:", error));
+      }
+
+      // Function to handle the form submission and add a new user
+      document
+        .getElementById("userForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent default form submission
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+
+          fetch("http://localhost:3000/addUsers", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              alert("User added successfully");
+              loadUsers(); // Reload users after adding a new user
+              document.getElementById("userForm").reset(); // Clear the form
+            })
+            .catch((error) => console.error("Error adding user:", error));
+        });
+
+      // Load users when the page loads
+      document.addEventListener("DOMContentLoaded", loadUsers);
+    </script>
+  </body>
+</html>
